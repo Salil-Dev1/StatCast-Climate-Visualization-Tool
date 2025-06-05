@@ -1,0 +1,242 @@
+[
+  {
+    "name": "Central America - Central/South American Monsoon",
+    "latMin": 7,
+    "latMax": 18,
+    "lonMin": -95,
+    "lonMax": -75,
+    "startMonth": 4,
+    "endMonth": 10,
+    "type": "true monsoon"
+  },
+  {
+    "name": "Amazon Brazil - South American Monsoon",
+    "latMin": -15,
+    "latMax": 0,
+    "lonMin": -75,
+    "lonMax": -55,
+    "startMonth": 9,
+    "endMonth": 5,
+    "type": "waves"
+  },
+  {
+    "name": "Southeast Brazil - South American Monsoon",
+    "latMin": -25,
+    "latMax": -18,
+    "lonMin": -55,
+    "lonMax": -40,
+    "startMonth": 11,
+    "endMonth": 3,
+    "type": "waves"
+  },
+  {
+    "name": "West Africa - West African Monsoon",
+    "latMin": 4,
+    "latMax": 16,
+    "lonMin": -20,
+    "lonMax": 15,
+    "startMonth": 6,
+    "endMonth": 10,
+    "type": "waves"
+  },
+  {
+    "name": "Southeast Africa - Southeast African Monsoon",
+    "latMin": -25,
+    "latMax": -10,
+    "lonMin": 30,
+    "lonMax": 45,
+    "startMonth": 1,
+    "endMonth": 3,
+    "type": "waves"
+  },
+  {
+    "name": "Kerala, India - Indo-Australian Monsoon",
+    "latMin": 8,
+    "latMax": 11,
+    "lonMin": 74,
+    "lonMax": 77,
+    "startMonth": 6,
+    "endMonth": 12,
+    "type": "persistent"
+  },
+  {
+    "name": "Mumbai, India - Indo-Australian Monsoon",
+    "latMin": 18,
+    "latMax": 20,
+    "lonMin": 72,
+    "lonMax": 73,
+    "startMonth": 6,
+    "endMonth": 10,
+    "type": "persistent"
+  },
+  {
+    "name": "Karachi, Pakistan - Indo-Australian Monsoon",
+    "latMin": 24,
+    "latMax": 25,
+    "lonMin": 66,
+    "lonMax": 68,
+    "startMonth": 6,
+    "endMonth": 9,
+    "type": "abrupt"
+  },
+  {
+    "name": "Lahore, Pakistan - Indo-Australian Monsoon",
+    "latMin": 31,
+    "latMax": 32,
+    "lonMin": 74,
+    "lonMax": 75,
+    "startMonth": 6,
+    "endMonth": 9,
+    "type": "abrupt"
+  },
+  {
+    "name": "Phuket, Thailand - Indo-Australian Monsoon",
+    "latMin": 7,
+    "latMax": 9,
+    "lonMin": 98,
+    "lonMax": 99,
+    "startMonth": 2,
+    "endMonth": 12,
+    "type": "persistent"
+  },
+  {
+    "name": "Colombo, Sri Lanka - Indo-Australian Monsoon",
+    "latMin": 6,
+    "latMax": 7,
+    "lonMin": 79,
+    "lonMax": 80,
+    "startMonth": 5,
+    "endMonth": 12,
+    "type": "persistent"
+  },
+  {
+    "name": "Bangkok, Thailand - Indo-Australian Monsoon",
+    "latMin": 13,
+    "latMax": 14,
+    "lonMin": 100,
+    "lonMax": 101,
+    "startMonth": 4,
+    "endMonth": 11,
+    "type": "persistent"
+  },
+  {
+    "name": "Yangon, Myanmar - Indo-Australian Monsoon",
+    "latMin": 16,
+    "latMax": 17,
+    "lonMin": 96,
+    "lonMax": 97,
+    "startMonth": 5,
+    "endMonth": 11,
+    "type": "persistent"
+  },
+  {
+    "name": "Dhaka, Bangladesh - Indo-Australian Monsoon",
+    "latMin": 23,
+    "latMax": 24,
+    "lonMin": 90,
+    "lonMax": 91,
+    "startMonth": 6,
+    "endMonth": 10,
+    "type": "abrupt"
+  },
+  {
+    "name": "Cebu, Philippines - Indo-Australian Monsoon",
+    "latMin": 10,
+    "latMax": 11,
+    "lonMin": 123,
+    "lonMax": 124,
+    "startMonth": 10,
+    "endMonth": 3,
+    "type": "abrupt"
+  },
+  {
+    "name": "Kelantan, Malaysia - Indo-Australian Monsoon",
+    "latMin": 5,
+    "latMax": 6,
+    "lonMin": 102,
+    "lonMax": 103,
+    "startMonth": 10,
+    "endMonth": 3,
+    "type": "waves"
+  },
+  {
+    "name": "Jakarta, Indonesia - Indo-Australian Monsoon",
+    "latMin": -6.5,
+    "latMax": -5.5,
+    "lonMin": 106,
+    "lonMax": 107,
+    "startMonth": 11,
+    "endMonth": 3,
+    "type": "abrupt"
+  },
+  {
+    "name": "Kaohsiung, Taiwan - Indo-Australian Monsoon",
+    "latMin": 22,
+    "latMax": 23,
+    "lonMin": 120,
+    "lonMax": 121,
+    "startMonth": 5,
+    "endMonth": 10,
+    "type": "abrupt"
+  },
+  {
+    "name": "Taipei, Taiwan - Indo-Australian Monsoon",
+    "latMin": 25,
+    "latMax": 26,
+    "lonMin": 121,
+    "lonMax": 122,
+    "startMonth": 5,
+    "endMonth": 10,
+    "type": "abrupt"
+  },
+  {
+    "name": "Hanoi, Vietnam - Indo-Australian Monsoon",
+    "latMin": 21,
+    "latMax": 22,
+    "lonMin": 105,
+    "lonMax": 106,
+    "startMonth": 5,
+    "endMonth": 10,
+    "type": "abrupt"
+  },
+  {
+    "name": "Kagoshima, Japan - Indo-Australian Monsoon",
+    "latMin": 31,
+    "latMax": 32,
+    "lonMin": 130,
+    "lonMax": 131,
+    "startMonth": 6,
+    "endMonth": 10,
+    "type": "abrupt"
+  },
+  {
+    "name": "Seoul, South Korea - Indo-Australian Monsoon",
+    "latMin": 37,
+    "latMax": 38,
+    "lonMin": 126,
+    "lonMax": 127,
+    "startMonth": 7,
+    "endMonth": 9,
+    "type": "abrupt"
+  },
+  {
+    "name": "Beijing, China - Indo-Australian Monsoon",
+    "latMin": 39,
+    "latMax": 40,
+    "lonMin": 116,
+    "lonMax": 117,
+    "startMonth": 7,
+    "endMonth": 9,
+    "type": "abrupt"
+  },
+  {
+    "name": "Darwin, Australia - Indo-Australian Monsoon",
+    "latMin": -13,
+    "latMax": -11,
+    "lonMin": 130,
+    "lonMax": 132,
+    "startMonth": 10,
+    "endMonth": 4,
+    "type": "persistent"
+  }
+]
