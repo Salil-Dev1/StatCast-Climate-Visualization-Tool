@@ -1,33 +1,19 @@
 package com.project.weather.Service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.project.weather.Models.Forecast;
 import com.project.weather.Models.Weather;
-import com.project.weather.Models.ZonesMonsoon;
 import com.project.weather.Repository.WeatherRepository;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
-import java.io.InputStream;
-import java.sql.Array;
-import java.sql.Time;
-import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.time.zone.ZoneRulesProvider;
+
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Service
 public class WeatherService {
@@ -36,36 +22,28 @@ public class WeatherService {
     @Autowired
     WeatherRepository weatherRepository;
 
-    public List<Weather> getData(){
-        return weatherRepository.findAll(); // Return the list of Weather data
-    }
+
     public List<Weather> getWeatherHistory(String location, int days){
+        //Get Weather Data for days number of Days
         LocalDateTime fromDate = LocalDateTime.now().minusDays(days);
         //save the date in fromDate which is x days before the present date.
         return weatherRepository.findRecentWeatherData(location,fromDate);
     }
 
 
-    private final List<ZonesMonsoon> boxes = loadBoxesSafely();
+   // private final List<ZonesMonsoon> boxes = loadBoxesSafely();
 
-    private List<ZonesMonsoon> loadBoxesSafely() {
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            InputStream is = new ClassPathResource("Monsoon_Zones.json").getInputStream();
-            List<ZonesMonsoon> loaded = mapper.readValue(is,
-                    new TypeReference<List<ZonesMonsoon>>() {});
-            return (loaded == null) ? Collections.emptyList() : loaded;
-        } catch (Exception e) {
-            System.err.println("Failed to load monsoon_zones.json: " + e.getMessage());
-            return Collections.emptyList();
-        }
-    }
+
+
+    //This is a prototype to add monsoon Zones, currently this feature is under progress
+
 
 
 
 
 
     public double calculateWeightedMovingAverage(List<Double> values) {
+        //Caclulates Moving Average using WeightedSum
         int size = values.size();
         double weightedSum = 0;
         double totalWeight = 0;
@@ -79,6 +57,7 @@ public class WeatherService {
 
 
     public double exponentialSmoothing(List<Double> values, double alpha) {
+        //calculates moving average using exponential smoothing
         double smoothed = values.get(0);
 
         for (int i = 1; i < values.size(); i++) {
@@ -89,6 +68,7 @@ public class WeatherService {
     }
 
     public double linearRegression(List<Double> values) {
+        //calculates moving average using linear regression
         int n = values.size();
         double sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
 
@@ -105,226 +85,42 @@ public class WeatherService {
     }
 
     public double forecastTemperature(List<Double> weatherElement) {
+        //combine all three methods to forecast the weather
         double wma = calculateWeightedMovingAverage(weatherElement);
         double es = exponentialSmoothing(weatherElement, 0.5); // Alpha = 0.5 for smoothing
         double lr = linearRegression(weatherElement);
         return (wma + es + lr) / 3; // Blend all three methods
-    }
-
-    private final List<ZonesMonsoon> zones = loadZonesSafely();
-
-    private List<ZonesMonsoon> loadZonesSafely() {
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            InputStream is = new ClassPathResource("Monsoon_Zones.json").getInputStream();
-            List<ZonesMonsoon> loaded = mapper.readValue(is,
-                    new TypeReference<List<ZonesMonsoon>>() {});
-            return (loaded == null) ? Collections.emptyList() : loaded;
-        } catch (Exception e) {
-            // Log a warning and return an empty list if JSON fails
-            System.err.println("Failed to load monsoon_zones.json: " + e.getMessage());
-            return Collections.emptyList();
-        }
-    }
-
-    // (b) Helper to parse strings like "late June" or "June 10" into a LocalDate in the given year.
-    private LocalDate parseZoneDate(String raw, int year) {
-        if (raw == null || raw.isEmpty()) {
-            return null;
-        }
-        // Remove citations
-        String normalized = raw.toLowerCase().replaceAll("\\[.*?\\]", "").trim();
-        if (normalized.contains("early")) normalized = normalized.replace("early", "05");
-        if (normalized.contains("mid"))   normalized = normalized.replace("mid",   "15");
-        if (normalized.contains("late"))  normalized = normalized.replace("late",  "25");
-
-        String[] parts = normalized.split("\\s+");
-        String monthToken;
-        int dayOfMonth;
-
-        if (parts.length == 2) {
-            // e.g. ["10", "june"]
-            String first = parts[0].replaceAll("[^0-9]", "");
-            String second = parts[1];
-            if (first.matches("\\d+")) {
-                dayOfMonth = Integer.parseInt(first);
-                monthToken = second;
-            } else {
-                return null;
-            }
-        } else if (parts.length == 1) {
-            // e.g. ["june"] → default to day 15
-            monthToken = parts[0];
-            dayOfMonth = 15;
-        } else {
-            return null; // too many tokens
-        }
-
-        int monthNum = getMonthNumber(monthToken);
-        if (monthNum < 1 || monthNum > 12) {
-            return null;
-        }
-
-        try {
-            return LocalDate.of(year, monthNum, dayOfMonth);
-        } catch (DateTimeException ex) {
-            return null;
-        }
-    }
-
-    private int getMonthNumber(String month) {
-        switch (month.toLowerCase()) {
-            case "january":   return 1;
-            case "february":  return 2;
-            case "march":     return 3;
-            case "april":     return 4;
-            case "may":       return 5;
-            case "june":      return 6;
-            case "july":      return 7;
-            case "august":    return 8;
-            case "september": return 9;
-            case "october":   return 10;
-            case "november":  return 11;
-            case "december":  return 12;
-            default:          return 0;
-        }
-    }
-
-    // Utility to clamp a value between two bounds
-    private double clamp(double min, double max, double value) {
-        if (value < min) return min;
-        if (value > max) return max;
-        return value;
+        //and calculates their total average to return final value
     }
 
 
-    /*public double prototypeCalculateRainProbability(
-            List<Double> humidities,
-            List<Double> pressures,
-            List<Double> cloudPercents,
-            List<Double> windSpeeds,
-            double latitude,
-            double longitude) {
-
-        // 1) If no data, fallback to 10% chance.
-
-        // 2) Compute averages of the weather parameters:
-        double avgHumidity = humidities.stream()
-                .mapToDouble(Double::doubleValue) // Convert Double objects to primitive double
-                .average()
-                .orElse(0);
-        double avgPressure   = pressures.stream()
-                .mapToDouble(Double::doubleValue) // Convert Double objects to primitive double
-                .average()
-                .orElse(0);
-        double avgWindSpeed  = windSpeeds.stream()
-                .mapToDouble(Double::doubleValue) // Convert Double objects to primitive double
-                .average()
-                .orElse(0);
-        double avgCloudCover = cloudPercents.stream()
-                .mapToDouble(Double::doubleValue) // Convert Double objects to primitive double
-                .average()
-                .orElse(0);
-
-        // 3) Build “meteorological confidence” C (0.0–1.0) from these four factors:
-        //    a) humidityFactor = avgHumidity / 100.0
-        double humidityFactor = clamp(0.0, 1.0, avgHumidity / 100.0);
-
-        //    b) pressureFactor: lower-than-standard pressures → higher factor
-        //       We assume “1013 hPa” is “neutral.” Each 1 hPa below 1013 adds 1/20 to factor,
-        //       capped at 1.0. Pressures above 1013 give negative diff → clamp to 0.
-        double pressureDiff   = 1013.0 - avgPressure;         // e.g. if avgPressure=1003 → diff=10
-        double pressureFactor = clamp(0.0, 1.0, pressureDiff / 20.0);
-
-        //    c) cloudFactor = avgCloudCover / 100.0
-        double cloudFactor = clamp(0.0, 1.0, avgCloudCover / 100.0);
-
-        //    d) windFactor: low wind helps clouds form (0–5 km/h → 0.7), moderate (5–15 → 0.5),
-        //                   high (>15 → 0.2)
-        double windFactor;
-        if (avgWindSpeed <= 5.0) {
-            windFactor = 0.7;
-        } else if (avgWindSpeed <= 15.0) {
-            windFactor = 0.5;
-        } else {
-            windFactor = 0.2;
-        }
-
-        //    e) Confidence = (humidityFactor + pressureFactor + cloudFactor + windFactor) / 4
-        double confidence = (humidityFactor + pressureFactor + cloudFactor + windFactor) / 4.0;
-
-        // 4) Compute “area coverage” A from cloud cover alone (as a simple proxy):
-        //    If avgCloudCover = 80, assume 80% of the area is covered by rain‐producing clouds.
-        double areaCoverage = clamp(0.0, 1.0, avgCloudCover / 100.0);
-
-        // 5) Base PoP (0–100) = confidence × areaCoverage × 100
-        double basePoP = confidence * areaCoverage * 100.0;
-        basePoP = clamp(0.0, 100.0, basePoP); //value won't exceed 100 or go below 0.
-
-        // 6) Now check if (latitude, longitude) is inside any monsoon zone that is “active today.”
-        int currentMonth = LocalDate.now().getMonthValue();
-        boolean inActiveMonsoonZone = false;
-
-        for (ZonesMonsoon zone : zones) {
-            // Check bounding box
-            if (latitude >= zone.getLatMin() &&
-                    latitude <= zone.getLatMax() &&
-                    longitude >= zone.getLonMin() &&
-                    longitude <= zone.getLonMax()) {
-
-                int start = zone.getStartMonth();  // e.g. 4
-                int end   = zone.getEndMonth();    // e.g. 10
-
-                boolean seasonActive;
-                if (start <= end) {
-                    // Normal case (e.g. April (4) to October (10))
-                    seasonActive = (currentMonth >= start && currentMonth <= end);
-                } else {
-                    // Cross‐year case (e.g. November (11) to March (3))
-                    seasonActive = (currentMonth >= start || currentMonth <= end);
-                }
-
-                if (seasonActive) {
-                    inActiveMonsoonZone = true;
-                    break;
-                }
-            }
-        }
-
-        if (inActiveMonsoonZone) {
-            basePoP += 15.0;  // monsoon‐zone boost
-        }
-
-        double finalPoP = clamp(10.0, 95.0, basePoP);
-        return finalPoP;
-    }
-*/
     public double calculateRainProbability(List<Double> humidities, List<Double> pressures, List<Double> cloudPercents,
     List<Double> windSpeeds) {
-
-
-
+        //calculates Rain Probability using Humidity Cloud% pressure and winds
         double avgHumidity = humidities.stream().mapToDouble(Double::doubleValue).average().orElse(0);
         double avgPressure = pressures.stream().mapToDouble(Double::doubleValue).average().orElse(0);
         double avgWindSpeed = windSpeeds.stream().mapToDouble(Double::doubleValue).average().orElse(0);
         double avgCloudCover = cloudPercents.stream().mapToDouble(Double::doubleValue).average().orElse(0);
-
         double humidityFactor = Math.max(0.0, Math.min(1,avgHumidity/100));
         double pressureFactor = Math.max(0.0, Math.min(1,(1013 - avgPressure)/50));
         double cloudFactor = Math.max(0.0, Math.min(1,avgCloudCover/100));
 
+        //Probability of Precipitation is calculated as confidence * AreaCoverage
         double AreaCoverage = (cloudFactor + humidityFactor + pressureFactor)/3;
 
-        LocalDate today = LocalDate.now();
 
-        double rainChance = 0;
+
+
         double confidence = 1;
 
         if (avgHumidity > 80 && avgPressure < 1010 && avgCloudCover > 50) {
             confidence += 0.2;
         }
+        else if (avgHumidity > 70 || avgCloudCover > 50 ) {
+            confidence += 0.1;
+        }
 
-        if(avgHumidity > 50) {
+        else if(avgHumidity > 50) {
             confidence +=0.3;
         }
 
@@ -332,19 +128,12 @@ public class WeatherService {
             confidence += 0.3; // reinforce rain chance slightly
         }
 
-        else if (avgHumidity > 70 && avgCloudCover > 50 ) {
-            confidence += 0.1;
-        }
-
-        else if (avgWindSpeed > 10 && avgWindSpeed <= 15) {
-            // No adjustment, so maybe explicitly comment that it’s neutral.
-        }
-
-
-        else if (avgWindSpeed > 15 && confidence > 0.5) {
-             confidence -= 0.1;
+        else if (avgWindSpeed > 15) {
+            confidence -= 0.1;
             // reduce mildly
         }
+
+
 
          else if (avgWindSpeed > 5 && avgWindSpeed <= 10) {
             confidence += 0.2;
@@ -355,26 +144,16 @@ public class WeatherService {
 
          double pOP = AreaCoverage * confidence;
 
-        return Math.round(pOP*100);
-    }
-
-    private double fetchLatitude(String location){
-        String fetch = convertToApi(location);
-        JSONObject jsonObject = new JSONObject(fetch);
-        double lat = jsonObject.getJSONObject("coord").getDouble("lat");
-        return lat;
-    }
-    private double fetchLongitude(String location){
-        String fetch = convertToApi(location);
-        JSONObject jsonObject = new JSONObject(fetch);
-        double lon = jsonObject.getJSONObject("coord").getDouble("lon");
-        return lon;
+        return Math.round(pOP*100); //returns rain probability
     }
 
 
 
-    public List<Forecast> ifNotEnoughData(String location,double lat,double lon){
 
+
+    public List<Forecast> ifNotEnoughData(String location){
+        //if recent data is not available for forecast, fetch and process new data
+        //from the openWeather Api
             String forecastApi = convertForeCastApi(location);
             JSONObject jsonObject = new JSONObject(forecastApi);
 
@@ -527,16 +306,16 @@ public class WeatherService {
 
 
     public List<Forecast> getThreeDayForecast(String location) {
+        //Forecast Method
         List<Forecast> forecastList = new ArrayList<>();
 
             LocalDateTime fromDate = LocalDateTime.now().minusDays(3);
             List<Weather> recentData = weatherRepository.findRecentWeatherData(location, fromDate);
 
-            double lat = fetchLatitude(location);
-            double lon = fetchLongitude(location);
+
 
             if (recentData.size() < 3) { //Not enough data to predict, fetch new data and process it
-                return ifNotEnoughData(location,lat,lon);
+                return ifNotEnoughData(location);
             }
 
             //if Data exists, read existing values
@@ -651,12 +430,11 @@ public class WeatherService {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(existingRecord.get(0)); // Prevent duplicate entry
             }
 
-
             String record = convertToApi(weather.getLocation());
             List<Double> dailyHighTemps = new ArrayList<>();
             List<Double> dailyLowTemps = new ArrayList<>();
-            double highTemp = 0;
-            double lowTemp = 0;
+            double highTemp;
+            double lowTemp;
             fetchHighLow(dailyHighTemps,dailyLowTemps,weather.getLocation());
             highTemp = forecastTemperature(dailyHighTemps);
             lowTemp = forecastTemperature(dailyLowTemps);
@@ -667,8 +445,7 @@ public class WeatherService {
             List<Double> pressures = new ArrayList<>();
             List<Double> windSpeeds = new ArrayList<>();
 
-            double lon = jsonObject.getJSONObject("coord").getDouble("lon");
-            double lat = jsonObject.getJSONObject("coord").getDouble("lat");
+
             double temperature = jsonObject.getJSONObject("main").getDouble("temp") - 273.15;
             double windSpeed = jsonObject.getJSONObject("wind").getDouble("speed");
             double humidity = jsonObject.getJSONObject("main").getDouble("humidity");
@@ -677,7 +454,7 @@ public class WeatherService {
             JSONArray weatherArray = jsonObject.getJSONArray("weather");
             String description = weatherArray.getJSONObject(0).getString("description");
 
-            List<Weather> records = new ArrayList<>();
+
 
             humidities.add(humidity); //add only today's entry to this list to pass it to calculate rain probability
             pressures.add(pressure);//add single entry to pass it to calculate rain probability
