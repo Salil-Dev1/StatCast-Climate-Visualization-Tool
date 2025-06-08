@@ -6,6 +6,7 @@ import com.project.weather.Repository.WeatherRepository;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,10 @@ public class WeatherService {
     @Autowired
     WeatherRepository weatherRepository;
 
+    @Value("${api.id}")
+    private String apiId;
+
+
 
     public List<Weather> getWeatherHistory(String location, int days){
         //Get Weather Data for days number of Days
@@ -36,10 +41,6 @@ public class WeatherService {
 
 
     //This is a prototype to add monsoon Zones, currently this feature is under progress
-
-
-
-
 
 
     public double calculateWeightedMovingAverage(List<Double> values) {
@@ -477,7 +478,7 @@ public class WeatherService {
 
     public String convertToApi(String location){
 
-            String apiId = "e9ef9764db93deb810444e4b7fd55ad0";
+
             String CurrentApiUrl = "https://api.openweathermap.org/data/2.5/weather?q="+location+"&appid="+apiId;
             RestTemplate restTemplate = new RestTemplate();
             return restTemplate.getForObject(CurrentApiUrl, String.class);
@@ -485,8 +486,8 @@ public class WeatherService {
 
     public String convertForeCastApi(String location){
 
-            String apiKey = "e9ef9764db93deb810444e4b7fd55ad0";
-            String forecastApi = "https://api.openweathermap.org/data/2.5/forecast?q="+location+"&appid="+apiKey;
+
+            String forecastApi = "https://api.openweathermap.org/data/2.5/forecast?q="+location+"&appid="+apiId;
             RestTemplate restTemplate = new RestTemplate();
             return restTemplate.getForObject(forecastApi,String.class);
     }
